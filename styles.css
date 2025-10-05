@@ -1,0 +1,89 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
+
+body { 
+    font-family: 'Inter', sans-serif; 
+    background-color: #f7f9fb; /* Light background */
+}
+
+#map { 
+    height: 400px; 
+    width: 100%; 
+    border-radius: 0.75rem; 
+    border: 2px solid #3b82f6; /* Blue border */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.dashboard-card { 
+    background-color: white; 
+    border-radius: 1rem; 
+    box-shadow: 0 15px 25px -5px rgba(0, 0, 0, 0.1), 0 5px 10px -5px rgba(0, 0, 0, 0.04); 
+    padding: 2rem; 
+    transition: transform 0.2s ease-in-out;
+}
+
+.dashboard-card:hover {
+    transform: translateY(-3px);
+}
+
+/* Custom styles for Leaflet */
+.leaflet-container { 
+    font-family: 'Inter', sans-serif; 
+}
+
+/* flatpickr styling */
+.flatpickr-calendar {
+    border-radius: 0.75rem;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+    border: none;
+}
+
+.flatpickr-day.selected, .flatpickr-day.selected:hover, .flatpickr-day.startRange, .flatpickr-day.startRange:hover, .flatpickr-day.endRange, .flatpickr-day.endRange:hover {
+    background: #3b82f6; /* Tailwind blue-500 */
+    border-color: #3b82f6;
+}
+
+.flatpickr-day.today:not(.selected) {
+    border-color: #93c5fd; /* Tailwind blue-300 */
+}
+
+.flatpickr-day.selected.startRange + .endRange:not(:nth-child(7n+1)), .flatpickr-day.startRange.flatpickr-day.selected + .flatpickr-day.endRange:not(:nth-child(7n+1)) {
+    box-shadow: -10px 0 0 #3b82f6;
+}
+
+/* select2 styling overrides */
+.select2-container--default .select2-selection--single {
+    height: 42px; /* Adjust height */
+    border-radius: 0.5rem;
+    border: 1px solid #d1d5db; /* gray-300 */
+    display: flex;
+    align-items: center;
+    padding-left: 0.75rem;
+    background-color: #fff;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.select2-container--default .select2-selection--single .select2-selection__rendered {
+    line-height: normal; /* Ensure text aligns */
+    color: #374151; /* gray-700 */
+}
+
+.select2-container--default .select2-selection--single .select2-selection__arrow {
+    height: 40px; /* Adjust arrow height */
+}
+
+.select2-container--default.select2-container--focus .select2-selection--single,
+.select2-container--default .select2-selection--single:focus {
+    border-color: #3b82f6; /* blue-500 */
+    box-shadow: 0 0 0 1px #3b82f6;
+}
+
+.select2-dropdown {
+    border-radius: 0.5rem;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    border: 1px solid #d1d5db;
+}
+
+.select2-container--default .select2-results__option--highlighted.select2-results__option--selectable {
+    background-color: #eff6ff; /* blue-50 */
+    color: #1e40af; /* blue-800 */
+}

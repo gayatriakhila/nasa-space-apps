@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NASA Earth Observation Weather Planner</title>
+    <script src="https://cdn.tailwindcss.com" ></script>
+    
+    <link rel="stylesheet" href="styles.css">
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+</head>
+<body class="p-4 md:p-8 bg-gradient-to-br from-blue-100 to-indigo-100 min-h-screen">
+
+    <div class="max-w-7xl mx-auto">
+        <h1 class="text-4xl md:text-5xl font-extrabold text-blue-800 mb-2 text-center">NASA Earth Observation Weather Planner 🛰️</h1>
+        <p class="text-gray-700 mb-8 text-center max-w-2xl mx-auto">
+            Plan your activities with confidence! Select a location and date to get comprehensive weather insights, historical likelihoods of extreme conditions using NASA's MERRA-2 climatology, and activity-specific recommendations.
+        </p>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+            <div class="lg:col-span-2 space-y-6">
+                <div class="dashboard-card">
+                    <h2 class="text-xl font-semibold text-gray-700 mb-4">1. Choose Location & Date/Time</h2>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                        <div>
+                            <label for="locationSearch" class="block text-sm font-medium text-gray-700">Location (City Name or Click Map)</label>
+                            <select id="locationSearch" class="mt-1 w-full p-2 border border-gray-300 rounded-lg bg-white text-sm focus:ring-blue-500 focus:border-blue-500"></select>
+                            <input type="hidden" id="latitude" value="34.0522">
+                            <input type="hidden" id="longitude" value="-118.2437">
+                            <p class="text-xs text-gray-500 mt-1">Current Coords: <span id="coordsDisplay">34.0522, -118.2437</span></p>
+                        </div>
+                        <div>
+                            <label for="dateTimePicker" class="block text-sm font-medium text-gray-700">Date & Time</label>
+                            <input type="text" id="dateTimePicker" class="mt-1 w-full p-2 border border-gray-300 rounded-lg bg-white text-sm focus:ring-blue-500 focus:border-blue-500" placeholder="Select Date and Time">
+                        </div>
+                    </div>
+
+                    <div id="map" class="mb-4"></div>
+                    
+                    <button id="analyzeButton" class="w-full font-bold py-3 px-4 rounded-lg text-white bg-blue-600 hover:bg-blue-700 transition duration-150 transform hover:scale-[1.02] disabled:opacity-50 mt-4">
+                        Get Weather & Planning Insights
+                    </button>
+                </div>
+            </div>
+
+            <div class="lg:col-span-1 space-y-6">
+                <div class="dashboard-card min-h-[300px] flex flex-col justify-between">
+                    <div>
+                        <h2 class="text-xl font-semibold text-gray-700 mb-4">2. Weather Report & Geography</h2>
+                        <div id="locationDetails" class="mb-4 text-gray-600 hidden">
+                            <p><strong class="text-gray-700">Location:</strong> <span id="reportLocationName"></span></p>
+                            <p><strong class="text-gray-700">Timezone:</strong> <span id="reportTimezone"></span></p>
+                            <p><strong class="text-gray-700">Elevation:</strong> <span id="reportElevation"></span></p>
+                        </div>
+                        <div id="currentWeatherReport" class="text-gray-700 hidden">
+                            <p class="text-lg font-bold mb-2">Current Conditions:</p>
+                            <p><span id="currentTemp" class="text-3xl font-extrabold text-blue-700"></span></p>
+                            <p><span id="currentConditions"></span></p>
+                            <p>Wind: <span id="currentWind"></span> | Humidity: <span id="currentHumidity"></span></p>
+                            <p class="text-sm text-gray-500 mt-2">Data from <span id="currentWeatherSource"></span></p>
+                        </div>
+                        <div id="reportLoadingIndicator" class="text-center py-10 hidden">
+                            <div class="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-500 mx-auto"></div>
+                            <p class="mt-3 text-blue-600">Fetching weather data...</p>
+                        </div>
+                        <div id="initialPrompt" class="text-center py-10 text-gray-500">
+                            Select a location and time, then click the button to begin analysis.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dashboard-card">
+                    <h2 class="text-xl font-semibold text-gray-700 mb-4">3. Planning Insights & Likelihoods</h2>
+                    <div id="planningLoadingIndicator" class="text-center py-10 hidden">
+                        <div class="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-500 mx-auto"></div>
+                        <p class="mt-3 text-blue-600">Analyzing historical trends & activities...</p>
+                    </div>
+                    
+                    <div id="chartContainer" class="hidden">
+                        <canvas id="likelihoodChart"></canvas>
+                        <div class="mt-6 text-sm text-gray-600">
+                            <p class="font-semibold text-gray-700">Summary:</p>
+                            <p id="summaryText">Select a location and date, then click "Get Weather & Planning Insights" to see historical probabilities and activity recommendations.</p>
+                        </div>
+                        <div id="activityRecommendations" class="mt-4 border-t pt-4 border-gray-200 hidden">
+                            <p class="font-semibold text-gray-700 mb-2">Activity Planning:</p>
+                            <ul id="activityList" class="list-disc pl-5 text-gray-600">
+                                </ul>
+                        </div>
+                    </div>
+
+                    <button id="downloadButton" class="w-full mt-6 font-semibold py-2 px-4 rounded-lg text-white bg-green-500 hover:bg-green-600 transition duration-150 disabled:opacity-50" disabled>
+                        Download Detailed Data (.json)
+                    </button>
+                </div>
+                
+                <div class="dashboard-card text-xs text-gray-500">
+                    <p class="font-semibold">Current User/Session ID:</p>
+                    <p id="userIdDisplay" class="break-all"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script type="module" src="script.js"></script>
+
+</body>
+</html>
